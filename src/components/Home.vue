@@ -16,24 +16,23 @@
         <el-menu background-color="#333744" text-color="#fff" active-text-color="#ffd04b">
 
           <!--            一级菜单-->
-          <el-submenu index="1">
+          <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id" >
             <!--              一级菜单的模板区-->
             <template slot="title">
               <!--              一级菜单的图标-->
               <i class="el-icon-location"></i>
               <!--              一级菜单的文本-->
-              <span>一级菜单</span>
+              <span>{{item.authName}}</span>
             </template>
             <!--二级菜单-->
-            <el-submenu index="1-4" class="first-menu">
+            <el-submenu :index="subItem.id" v-for="subItem in item.children" :key="subItem.id">
               <!--  二级菜单的模板区-->
               <template slot="title">
                 <!--  二级菜单的图标-->
                 <i class="el-icon-location"></i>
                 <!--  二级菜单的文本-->
-                <span>二级菜单</span>
+                <span>{{subItem.authName}}</span>
               </template>
-              <el-menu-item index="1-4-1">选项1</el-menu-item>
             </el-submenu>
           </el-submenu>
         </el-menu>
@@ -47,10 +46,27 @@
 <script>
 export default {
   name: 'Home',
+  data () {
+    return {
+      // 左侧菜单数据
+      menulist: []
+    }
+  },
+  created () {
+    this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
+  },
   methods: {
     logout () {
       window.sessionStorage.clear()
       this.$router.push('/login')
+    },
+    // 获取所有的菜单
+    async getMenuList () {
+      const { data: res } = await this.$http.get('menus')
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.menulist = res.data
+      console.log(res)
     }
   }
 }
