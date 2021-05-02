@@ -11,7 +11,33 @@
     <!-- 页面主体区域-->
     <el-container>
       <!--  侧边栏-->
-      <el-aside width="200px">Aside</el-aside>
+      <el-aside width="200px">
+        <!-- 侧边栏菜单区域 -->
+        <el-menu background-color="#333744" text-color="#fff" active-text-color="#ffd04b">
+
+          <!--            一级菜单-->
+          <el-submenu index="1">
+            <!--              一级菜单的模板区-->
+            <template slot="title">
+              <!--              一级菜单的图标-->
+              <i class="el-icon-location"></i>
+              <!--              一级菜单的文本-->
+              <span>一级菜单</span>
+            </template>
+            <!--二级菜单-->
+            <el-submenu index="1-4" class="first-menu">
+              <!--  二级菜单的模板区-->
+              <template slot="title">
+                <!--  二级菜单的图标-->
+                <i class="el-icon-location"></i>
+                <!--  二级菜单的文本-->
+                <span>二级菜单</span>
+              </template>
+              <el-menu-item index="1-4-1">选项1</el-menu-item>
+            </el-submenu>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
       <!-- 右侧内容主体-->
       <el-main>Main</el-main>
     </el-container>
@@ -49,6 +75,7 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .el-header div span {
   margin-left: 15px;
 }
