@@ -23,7 +23,8 @@ const router = new Router({
         { path: '/users', component: Users },
         { path: '/rights', component: Right },
         { path: '/roles', component: Roles },
-        { path: '/categories', component: Cate }
+        { path: '/categories', component: Cate },
+        { path: '/params', component: Cate }
       ]
     }
   ]
