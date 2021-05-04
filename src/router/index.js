@@ -5,6 +5,7 @@ import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome'
 import Users from '../components/user/Users'
 import Right from '../components/power/Right'
+import Roles from '../components/power/Roles'
 
 Vue.use(Router)
 
@@ -19,7 +20,8 @@ const router = new Router({
       children: [
         { path: '/welcome', component: Welcome },
         { path: '/users', component: Users },
-        { path: '/rights', component: Right }
+        { path: '/rights', component: Right },
+        { path: '/roles', component: Roles }
       ]
     }
   ]
