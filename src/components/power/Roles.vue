@@ -60,15 +60,15 @@
       </el-table>
     </el-card>
 
-<!--    &lt;!&ndash; 分配权限的对话框 &ndash;&gt;-->
-<!--    <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="setRightDialogClosed">-->
-<!--      &lt;!&ndash; 树形控件 &ndash;&gt;-->
-<!--      <el-tree :data="rightslist" :props="treeProps" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKeys" ref="treeRef"></el-tree>-->
-<!--      <span slot="footer" class="dialog-footer">-->
-<!--        <el-button @click="setRightDialogVisible = false">取 消</el-button>-->
-<!--        <el-button type="primary" @click="allotRights">确 定</el-button>-->
-<!--      </span>-->
-<!--    </el-dialog>-->
+    <!-- 分配权限的对话框 -->
+    <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="setRightDialogClosed">
+      <!-- 树形控件 -->
+      <el-tree :data="rightslist" :props="treeProps" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKeys" ref="treeRef"></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="allotRights">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -89,7 +89,7 @@ export default {
       },
       // 默认选中的节点Id值数组
       defKeys: [],
-      // 当前即将分配权限的角色id
+      // 当前即将分配权限的角色id，为了分配角色权限对话框的使用
       roleId: ''
     }
   },
@@ -155,6 +155,42 @@ export default {
       this.getLeafKeys(role, this.defKeys)
 
       this.setRightDialogVisible = true
+    },
+    // 通过递归的形式，获取角色下所有三级权限的id，并保存到 defKeys 数组中
+    getLeafKeys (node, arr) {
+      // 如果当前 node 节点不包含 children 属性，则是三级节点
+      if (!node.children) {
+        return arr.push(node.id)
+      }
+
+      node.children.forEach(item => this.getLeafKeys(item, arr))
+    },
+    // 监听分配权限对话框的关闭事件,每次对话框关闭前清空默认的权限数组
+    setRightDialogClosed () {
+      this.defKeys = []
+    },
+    // 点击为角色分配权限
+    async allotRights () {
+      const keys = [
+        // getCheckedKeys和getHalfCheckedKeys是element组件tree的自有方法
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
+
+      const idStr = keys.join(',')
+
+      const { data: res } = await this.$http.post(
+        `roles/${this.roleId}/rights`,
+        { rids: idStr }
+      )
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('分配权限失败！')
+      }
+
+      this.$message.success('分配权限成功！')
+      this.getRolesList()
+      this.setRightDialogVisible = false
     }
   }
 }
