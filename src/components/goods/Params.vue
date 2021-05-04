@@ -97,6 +97,20 @@
         <el-button type="primary" @click="addParams">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 修改参数的对话框 -->
+    <el-dialog :title="'修改' + titleText" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed">
+      <!-- 添加参数的对话框 -->
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px">
+        <el-form-item :label="titleText" prop="attr_name">
+          <el-input v-model="editForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editParams">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,6 +143,16 @@ export default {
       },
       // 添加表单的验证规则对象
       addFormRules: {
+        attr_name: [
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ]
+      },
+      // 控制修改对话框的显示与隐藏
+      editDialogVisible: false,
+      // 修改的表单数据对象
+      editForm: {},
+      // 修改表单的验证规则对象
+      editFormRules: {
         attr_name: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
@@ -222,6 +246,78 @@ export default {
         this.addDialogVisible = false
         this.getParamsData()
       })
+    },
+    // 点击按钮，展示修改的对话框
+    // eslint-disable-next-line camelcase
+    async showEditDialog (attr_id) {
+      // 查询当前参数的信息
+      const { data: res } = await this.$http.get(
+        // eslint-disable-next-line camelcase
+        `categories/${this.cateId}/attributes/${attr_id}`,
+        {
+          params: { attr_sel: this.activeName }
+        }
+      )
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数信息失败！')
+      }
+
+      this.editForm = res.data
+      this.editDialogVisible = true
+    },
+    // 重置修改的表单
+    editDialogClosed () {
+      this.$refs.editFormRef.resetFields()
+    },
+    // 点击按钮，修改参数信息
+    editParams () {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(
+          `categories/${this.cateId}/attributes/${this.editForm.attr_id}`,
+          { attr_name: this.editForm.attr_name, attr_sel: this.activeName }
+        )
+
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改参数失败！')
+        }
+
+        this.$message.success('修改参数成功！')
+        this.getParamsData()
+        this.editDialogVisible = false
+      })
+    },
+    // 根据Id删除对应的参数项
+    // eslint-disable-next-line camelcase
+    async removeParams (attr_id) {
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该参数, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+
+      // 用户取消了删除的操作
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+
+      // 删除的业务逻辑
+      const { data: res } = await this.$http.delete(
+        // eslint-disable-next-line camelcase
+        `categories/${this.cateId}/attributes/${attr_id}`
+      )
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除参数失败！')
+      }
+
+      this.$message.success('删除参数成功！')
+      this.getParamsData()
     }
   },
   computed: {
