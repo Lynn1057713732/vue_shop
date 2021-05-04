@@ -9,6 +9,10 @@ import './assets/css/global.css'
 // 全局配置axios
 import axios from 'axios'
 
+import TreeTable from 'vue-table-with-tree-grid'
+
+Vue.component('tree-table', TreeTable)
+
 // 设置请求的根路径
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
