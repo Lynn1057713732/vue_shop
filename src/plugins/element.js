@@ -4,7 +4,8 @@ import {
   Main, Menu, Submenu, MenuItemGroup, MenuItem, Breadcrumb,
   BreadcrumbItem, Card, Row, Col, Table, TableColumn, Switch, Tooltip,
   Pagination, Dialog, MessageBox, Tag, Tree, Option, Select,
-  Cascader, Alert, Tabs, TabPane
+  Cascader, Alert, Tabs, TabPane, Steps, Step, CheckboxGroup, Checkbox,
+  Upload
 
 } from 'element-ui'
 
@@ -39,7 +40,11 @@ Vue.use(Cascader)
 Vue.use(Alert)
 Vue.use(Tabs)
 Vue.use(TabPane)
-
+Vue.use(Steps)
+Vue.use(Step)
+Vue.use(CheckboxGroup)
+Vue.use(Checkbox)
+Vue.use(Upload)
 // 全局挂载message组件
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
